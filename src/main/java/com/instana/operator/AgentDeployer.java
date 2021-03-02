@@ -11,29 +11,8 @@ import com.instana.operator.customresource.InstanaAgentSpec;
 import com.instana.operator.env.Environment;
 import com.instana.operator.events.DaemonSetAdded;
 import com.instana.operator.events.DaemonSetDeleted;
-import io.fabric8.kubernetes.api.model.ConfigMap;
-import io.fabric8.kubernetes.api.model.ConfigMapList;
-import io.fabric8.kubernetes.api.model.Container;
-import io.fabric8.kubernetes.api.model.Doneable;
-import io.fabric8.kubernetes.api.model.DoneableConfigMap;
-import io.fabric8.kubernetes.api.model.DoneableSecret;
-import io.fabric8.kubernetes.api.model.DoneableServiceAccount;
-import io.fabric8.kubernetes.api.model.EnvVar;
-import io.fabric8.kubernetes.api.model.EnvVarBuilder;
-import io.fabric8.kubernetes.api.model.HasMetadata;
-import io.fabric8.kubernetes.api.model.HostPathVolumeSourceBuilder;
-import io.fabric8.kubernetes.api.model.KubernetesResourceList;
-import io.fabric8.kubernetes.api.model.Quantity;
-import io.fabric8.kubernetes.api.model.QuantityBuilder;
-import io.fabric8.kubernetes.api.model.ResourceRequirements;
-import io.fabric8.kubernetes.api.model.Secret;
-import io.fabric8.kubernetes.api.model.SecretList;
-import io.fabric8.kubernetes.api.model.ServiceAccount;
-import io.fabric8.kubernetes.api.model.ServiceAccountList;
-import io.fabric8.kubernetes.api.model.Volume;
-import io.fabric8.kubernetes.api.model.VolumeBuilder;
-import io.fabric8.kubernetes.api.model.VolumeMount;
-import io.fabric8.kubernetes.api.model.VolumeMountBuilder;
+import com.sun.org.apache.xpath.internal.operations.Bool;
+import io.fabric8.kubernetes.api.model.*;
 import io.fabric8.kubernetes.api.model.apiextensions.v1beta1.CustomResourceDefinition;
 import io.fabric8.kubernetes.api.model.apps.DaemonSet;
 import io.fabric8.kubernetes.api.model.apps.DaemonSetList;
@@ -71,7 +50,7 @@ import static com.instana.operator.client.KubernetesClientProducer.CRD_NAME;
 import static com.instana.operator.util.ResourceUtils.hasOwner;
 import static com.instana.operator.util.ResourceUtils.hasSameName;
 import static com.instana.operator.util.ResourceUtils.name;
-import static com.instana.operator.util.StringUtils.isBlank;
+import static com.instana.operator.util.StringUtils.*;
 import static io.fabric8.kubernetes.client.Watcher.Action.ADDED;
 import static io.fabric8.kubernetes.client.Watcher.Action.DELETED;
 import static java.net.HttpURLConnection.HTTP_CONFLICT;
@@ -297,6 +276,9 @@ public class AgentDeployer {
       container.setImagePullPolicy(imagePullPolicyFromEnvVar);
     }
 
+    // Get and check for OpenTelemetry Settings
+    configureOpentelemetry(container,config);
+
     List<EnvVar> env = container.getEnv();
 
     env.add(createEnvVar("INSTANA_ZONE", config.getAgentZoneName()));
@@ -364,6 +346,23 @@ public class AgentDeployer {
     }
 
     return daemonSet;
+  }
+
+  private void configureOpentelemetry(Container container, InstanaAgentSpec config) {
+    // Get ImagePullPolicy value
+    String otelActiveFromEnvVar = environment.get(Environment.RELATED_INSTANA_OTEL_ACTIVE);
+    String otelPortFromEnvVar = environment.get(Environment.RELATED_INSTANA_OTEL_PORT);
+
+    Boolean otelActiveFromCustomResource = config.getAgentOtelActive();
+    Integer otelPortFromCustomResource = config.getAgentOtelPort();
+
+    if(otelActiveFromCustomResource || getBoolean(otelActiveFromEnvVar)){
+      Integer otelPort = otelPortFromCustomResource;
+      if(isInteger(otelPortFromEnvVar)){
+        otelPort = getInteger(otelPortFromEnvVar);
+      }
+      container.getPorts().add(new ContainerPort(otelPort,null, null,null,null));
+    }
   }
 
   private Quantity mem(int value, String format) {

@@ -34,6 +34,8 @@ public class InstanaAgentSpec {
   static final String DEFAULT_AGENT_MEM_REQ = "512";
   static final String DEFAULT_AGENT_MEM_LIMIT = "512";
   static final String DEFAULT_AGENT_IMAGE_PULLPOLICY = "Always";
+  static final String DEFAULT_AGENT_OTEL_ACTIVE = "false";
+  static final String DEFAULT_AGENT_OTEL_PORT = "55680";
 
   @JsonProperty("config.files")
   private Map<String, String> configFiles;
@@ -75,6 +77,10 @@ public class InstanaAgentSpec {
   private String agentDownloadKey;
   @JsonProperty(value = "agent.host.repository")
   private String agentHostRepository;
+  @JsonProperty(value = "agent.otel.active", defaultValue = DEFAULT_AGENT_OTEL_ACTIVE)
+  private Boolean agentOtelActive= Boolean.parseBoolean(DEFAULT_AGENT_OTEL_ACTIVE);
+  @JsonProperty(value = "agent.otel.port", defaultValue = DEFAULT_AGENT_OTEL_PORT)
+  private Integer agentOtelPort = Integer.parseInt(DEFAULT_AGENT_OTEL_PORT);;
   @JsonProperty(value = "cluster.name")
   private String clusterName;
   @JsonProperty(value = "agent.env")
@@ -241,6 +247,16 @@ public class InstanaAgentSpec {
   }
 
   public String getAgentImagePullPolicy() { return agentImagePullPolicy; }
+
+  public Boolean getAgentOtelActive() { return agentOtelActive; }
+
+  public void setAgentOtelActive(Boolean agentOtelActive) { this.agentOtelActive = agentOtelActive; }
+
+  public Integer getAgentOtelPort() { return agentOtelPort; }
+
+  public void setAgentOtelPort(Integer agentOtelPort) {
+    this.agentOtelPort = agentOtelPort;
+  }
 
   public void setAgentImagePullPolicy(String imagePullPolicy) { this.agentImagePullPolicy = imagePullPolicy; }
 
