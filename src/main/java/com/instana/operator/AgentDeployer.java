@@ -11,7 +11,6 @@ import com.instana.operator.customresource.InstanaAgentSpec;
 import com.instana.operator.env.Environment;
 import com.instana.operator.events.DaemonSetAdded;
 import com.instana.operator.events.DaemonSetDeleted;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import io.fabric8.kubernetes.api.model.*;
 import io.fabric8.kubernetes.api.model.apiextensions.v1beta1.CustomResourceDefinition;
 import io.fabric8.kubernetes.api.model.apps.DaemonSet;
