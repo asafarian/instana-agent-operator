@@ -11,7 +11,20 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-import static com.instana.operator.customresource.InstanaAgentSpec.*;
+import static com.instana.operator.customresource.InstanaAgentSpec.DEFAULT_AGENT_CLUSTER_ROLE_BINDING_NAME;
+import static com.instana.operator.customresource.InstanaAgentSpec.DEFAULT_AGENT_CLUSTER_ROLE_NAME;
+import static com.instana.operator.customresource.InstanaAgentSpec.DEFAULT_AGENT_CONFIG_MAP_NAME;
+import static com.instana.operator.customresource.InstanaAgentSpec.DEFAULT_AGENT_CPU_LIMIT;
+import static com.instana.operator.customresource.InstanaAgentSpec.DEFAULT_AGENT_CPU_REQ;
+import static com.instana.operator.customresource.InstanaAgentSpec.DEFAULT_AGENT_DAEMON_SET_NAME;
+import static com.instana.operator.customresource.InstanaAgentSpec.DEFAULT_AGENT_MEM_LIMIT;
+import static com.instana.operator.customresource.InstanaAgentSpec.DEFAULT_AGENT_MEM_REQ;
+import static com.instana.operator.customresource.InstanaAgentSpec.DEFAULT_AGENT_RBAC_CREATE;
+import static com.instana.operator.customresource.InstanaAgentSpec.DEFAULT_AGENT_SECRET_NAME;
+import static com.instana.operator.customresource.InstanaAgentSpec.DEFAULT_AGENT_SERVICE_ACCOUNT_NAME;
+import static com.instana.operator.customresource.InstanaAgentSpec.DEFAULT_AGENT_IMAGE_PULLPOLICY;
+import static com.instana.operator.customresource.InstanaAgentSpec.DEFAULT_AGENT_OTEL_ACTIVE;
+import static com.instana.operator.customresource.InstanaAgentSpec.DEFAULT_AGENT_OTEL_PORT;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;

@@ -248,6 +248,8 @@ public class InstanaAgentSpec {
 
   public String getAgentImagePullPolicy() { return agentImagePullPolicy; }
 
+  public void setAgentImagePullPolicy(String imagePullPolicy) { this.agentImagePullPolicy = imagePullPolicy; }
+
   public Boolean getAgentOtelActive() { return agentOtelActive; }
 
   public void setAgentOtelActive(Boolean agentOtelActive) { this.agentOtelActive = agentOtelActive; }
@@ -257,8 +259,6 @@ public class InstanaAgentSpec {
   public void setAgentOtelPort(Integer agentOtelPort) {
     this.agentOtelPort = agentOtelPort;
   }
-
-  public void setAgentImagePullPolicy(String imagePullPolicy) { this.agentImagePullPolicy = imagePullPolicy; }
 
   public Map<String, String> getAgentEnv() {
     if (agentEnv == null)
