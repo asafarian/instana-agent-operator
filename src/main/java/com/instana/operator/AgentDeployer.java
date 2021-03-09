@@ -73,9 +73,7 @@ import static com.instana.operator.util.ResourceUtils.hasOwner;
 import static com.instana.operator.util.ResourceUtils.hasSameName;
 import static com.instana.operator.util.ResourceUtils.name;
 import static com.instana.operator.util.StringUtils.isBlank;
-import static com.instana.operator.util.StringUtils.isInteger;
 import static com.instana.operator.util.StringUtils.getBoolean;
-import static com.instana.operator.util.StringUtils.getInteger;
 import static io.fabric8.kubernetes.client.Watcher.Action.ADDED;
 import static io.fabric8.kubernetes.client.Watcher.Action.DELETED;
 import static java.net.HttpURLConnection.HTTP_CONFLICT;
@@ -292,14 +290,7 @@ public class AgentDeployer {
     }
 
     // Get ImagePullPolicy value
-    String imagePullPolicyFromEnvVar = environment.get(Environment.RELATED_IMAGE_PULLPOLICY_INSTANA_AGENT);
-    String imagePullPolicyFromCustomResource = config.getAgentImagePullPolicy();
-
-    if (!isBlank(imagePullPolicyFromCustomResource)) {
-      container.setImagePullPolicy(imagePullPolicyFromCustomResource);
-    } else if (!isBlank(imagePullPolicyFromEnvVar)) {
-      container.setImagePullPolicy(imagePullPolicyFromEnvVar);
-    }
+    configureAgentImagePullPolicy(config, container);
 
     // Get and check for OpenTelemetry Settings
     configureOpentelemetry(container,config);
@@ -373,20 +364,24 @@ public class AgentDeployer {
     return daemonSet;
   }
 
+  private void configureAgentImagePullPolicy(InstanaAgentSpec config, Container container) {
+    String imagePullPolicyFromEnvVar = environment.get(Environment.RELATED_IMAGE_PULLPOLICY_INSTANA_AGENT);
+    String imagePullPolicyFromCustomResource = config.getAgentImagePullPolicy();
+
+    if (!isBlank(imagePullPolicyFromCustomResource)) {
+      container.setImagePullPolicy(imagePullPolicyFromCustomResource);
+    } else if (!isBlank(imagePullPolicyFromEnvVar)) {
+      container.setImagePullPolicy(imagePullPolicyFromEnvVar);
+    }
+  }
+
   private void configureOpentelemetry(Container container, InstanaAgentSpec config) {
     // Get ImagePullPolicy value
     String otelActiveFromEnvVar = environment.get(Environment.RELATED_INSTANA_OTEL_ACTIVE);
-    String otelPortFromEnvVar = environment.get(Environment.RELATED_INSTANA_OTEL_PORT);
-
     Boolean otelActiveFromCustomResource = config.getAgentOtelActive();
-    Integer otelPortFromCustomResource = config.getAgentOtelPort();
 
     if(otelActiveFromCustomResource || getBoolean(otelActiveFromEnvVar)){
-      Integer otelPort = otelPortFromCustomResource;
-      if(isInteger(otelPortFromEnvVar)){
-        otelPort = getInteger(otelPortFromEnvVar);
-      }
-      container.getPorts().add(new ContainerPort(otelPort,null, null,null,null));
+      container.getPorts().add(new ContainerPort(config.getAgentOtelPort(),null, null,null,null));
     }
   }
 
